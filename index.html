@@ -5,282 +5,79 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ニュース・ブログ音声変換</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            padding: 20px;
-        }
-
-        .container {
+            font-family: Arial, sans-serif;
             max-width: 800px;
             margin: 0 auto;
-            background: rgba(255, 255, 255, 0.95);
-            border-radius: 20px;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
             padding: 30px;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
         }
-
-        h1 {
-            text-align: center;
-            color: #333;
-            margin-bottom: 30px;
-            font-size: 2rem;
-            background: linear-gradient(45deg, #667eea, #764ba2);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        .input-section {
-            margin-bottom: 30px;
-        }
-
         textarea {
             width: 100%;
             height: 120px;
             padding: 15px;
-            border: 2px solid #e1e5e9;
-            border-radius: 12px;
-            font-size: 14px;
-            line-height: 1.5;
-            resize: vertical;
-            transition: border-color 0.3s ease;
-        }
-
-        textarea:focus {
-            outline: none;
-            border-color: #667eea;
-        }
-
-        .controls {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
+            border: 1px solid #ddd;
+            border-radius: 5px;
             margin-bottom: 20px;
-        }
-
-        button {
-            padding: 12px 20px;
-            border: none;
-            border-radius: 8px;
             font-size: 14px;
-            font-weight: 600;
+        }
+        button {
+            padding: 10px 20px;
+            margin: 5px;
+            border: none;
+            border-radius: 5px;
             cursor: pointer;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            gap: 8px;
+            font-size: 14px;
         }
-
-        .btn-primary {
-            background: linear-gradient(45deg, #4CAF50, #45a049);
-            color: white;
+        .btn-primary { background: #4CAF50; color: white; }
+        .btn-secondary { background: #2196F3; color: white; }
+        .btn-danger { background: #f44336; color: white; }
+        .btn-warning { background: #ff9800; color: white; }
+        .status {
+            padding: 15px;
+            background: #e3f2fd;
+            border-radius: 5px;
+            margin: 20px 0;
+            text-align: center;
         }
-
-        .btn-secondary {
-            background: linear-gradient(45deg, #2196F3, #1976D2);
-            color: white;
-        }
-
-        .btn-danger {
-            background: linear-gradient(45deg, #f44336, #d32f2f);
-            color: white;
-        }
-
-        .btn-warning {
-            background: linear-gradient(45deg, #ff9800, #f57c00);
-            color: white;
-        }
-
-        button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-        }
-
-        button:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-            transform: none;
-        }
-
-        .voice-control, .speed-control {
-            display: flex;
-            align-items: center;
-            gap: 10px;
+        .voice-control {
             margin: 20px 0;
         }
-
-        .voice-select {
-            padding: 8px 12px;
-            border: 2px solid #e1e5e9;
-            border-radius: 8px;
+        select {
+            padding: 8px;
             font-size: 14px;
-            background: white;
-            min-width: 200px;
-        }
-
-        .voice-select:focus {
-            outline: none;
-            border-color: #667eea;
-        }
-
-        .speed-slider {
-            width: 150px;
-            height: 6px;
-            border-radius: 3px;
-            background: #ddd;
-            outline: none;
-            -webkit-appearance: none;
-        }
-
-        .speed-slider::-webkit-slider-thumb {
-            appearance: none;
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            background: #667eea;
-            cursor: pointer;
-        }
-
-        .progress-bar {
-            width: 100%;
-            height: 8px;
-            background: #e1e5e9;
-            border-radius: 4px;
-            margin: 15px 0;
-            overflow: hidden;
-        }
-
-        .progress-fill {
-            height: 100%;
-            background: linear-gradient(45deg, #667eea, #764ba2);
-            width: 0%;
-            transition: width 0.1s ease;
-            border-radius: 4px;
-        }
-
-        .saved-articles {
-            margin-top: 30px;
-            padding-top: 30px;
-            border-top: 2px solid #e1e5e9;
-        }
-
-        .article-item {
-            background: #f8f9fa;
-            border-radius: 12px;
-            padding: 20px;
-            margin-bottom: 15px;
-            border-left: 4px solid #667eea;
-        }
-
-        .article-title {
-            font-weight: 600;
-            color: #333;
-            margin-bottom: 8px;
-            cursor: pointer;
-        }
-
-        .article-preview {
-            color: #666;
-            font-size: 14px;
-            line-height: 1.4;
-            margin-bottom: 10px;
-        }
-
-        .article-actions {
-            display: flex;
-            gap: 10px;
-        }
-
-        .status-info {
-            background: rgba(102, 126, 234, 0.1);
-            padding: 15px;
-            border-radius: 8px;
-            margin: 15px 0;
-            text-align: center;
-            color: #333;
-            font-weight: 500;
-        }
-
-        @media (max-width: 600px) {
-            .container {
-                padding: 20px;
-            }
-
-            .controls {
-                justify-content: center;
-            }
-
-            button {
-                padding: 10px 15px;
-                font-size: 12px;
-            }
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            margin-left: 10px;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>📢 ニュース・ブログ音声変換</h1>
+        <h1>ニュース・ブログ音声変換</h1>
         
-        <div class="input-section">
-            <textarea id="textInput" placeholder="ここにニュースやブログ記事をコピー＆ペーストしてください..."></textarea>
+        <textarea id="textInput" placeholder="ここにニュースやブログ記事を入力してください..."></textarea>
+        
+        <div>
+            <button id="playBtn" class="btn-primary">再生</button>
+            <button id="pauseBtn" class="btn-secondary">一時停止</button>
+            <button id="stopBtn" class="btn-danger">停止</button>
+            <button id="clearBtn" class="btn-warning">クリア</button>
+            <button id="testBtn" class="btn-secondary">音声テスト</button>
         </div>
-
-        <div class="controls">
-            <button id="playBtn" class="btn-primary">
-                ▶️ 再生
-            </button>
-            <button id="pauseBtn" class="btn-secondary" disabled>
-                ⏸️ 一時停止
-            </button>
-            <button id="stopBtn" class="btn-danger" disabled>
-                ⏹️ 停止
-            </button>
-            <button id="rewindBtn" class="btn-warning" disabled>
-                ⏪ 10秒戻る
-            </button>
-            <button id="forwardBtn" class="btn-warning" disabled>
-                ⏩ 10秒進む
-            </button>
-            <button id="saveBtn" class="btn-secondary">
-                ⭐ お気に入り保存
-            </button>
-            <button id="clearBtn" class="btn-warning">
-                🗑️ テキストクリア
-            </button>
-        </div>
-
+        
         <div class="voice-control">
-            <span>音声:</span>
-            <select id="voiceSelect" class="voice-select">
-                <option value="">音声を読み込み中...</option>
-            </select>
+            音声: <select id="voiceSelect"><option>読み込み中...</option></select>
         </div>
-
-        <div class="speed-control">
-            <span>再生速度:</span>
-            <input type="range" id="speedSlider" class="speed-slider" min="0.5" max="2" step="0.1" value="1">
-            <span id="speedValue">1.0x</span>
-        </div>
-
-        <div class="progress-bar">
-            <div class="progress-fill" id="progressFill"></div>
-        </div>
-
-        <div class="status-info" id="statusInfo">
+        
+        <div class="status" id="statusInfo">
             テキストを入力して再生ボタンを押してください
-        </div>
-
-        <div class="saved-articles">
-            <h2>📚 保存済み記事</h2>
-            <div id="savedList"></div>
         </div>
     </div>
 
@@ -290,9 +87,6 @@
                 this.utterance = null;
                 this.isPlaying = false;
                 this.isPaused = false;
-                this.currentText = '';
-                this.currentPosition = 0;
-                this.savedArticles = this.loadSavedArticles();
                 this.availableVoices = [];
                 this.selectedVoice = null;
                 this.init();
@@ -300,106 +94,65 @@
 
             init() {
                 this.bindEvents();
-                this.renderSavedArticles();
-                this.checkSpeechSupport();
-                setTimeout(() => this.loadVoices(), 100);
-            }
-
-            checkSpeechSupport() {
-                if (!('speechSynthesis' in window)) {
-                    document.getElementById('statusInfo').textContent = 
-                        'お使いのブラウザは音声合成に対応していません。Chrome、Edge、Safariをご利用ください。';
-                }
+                this.loadVoices();
             }
 
             bindEvents() {
-                document.getElementById('playBtn').addEventListener('click', () => this.play());
-                document.getElementById('pauseBtn').addEventListener('click', () => this.pause());
-                document.getElementById('stopBtn').addEventListener('click', () => this.stop());
-                document.getElementById('rewindBtn').addEventListener('click', () => this.rewind());
-                document.getElementById('forwardBtn').addEventListener('click', () => this.forward());
-                document.getElementById('saveBtn').addEventListener('click', () => this.saveArticle());
-                document.getElementById('clearBtn').addEventListener('click', () => this.clearText());
+                document.getElementById('playBtn').onclick = () => this.play();
+                document.getElementById('pauseBtn').onclick = () => this.pause();
+                document.getElementById('stopBtn').onclick = () => this.stop();
+                document.getElementById('clearBtn').onclick = () => this.clearText();
+                document.getElementById('testBtn').onclick = () => this.testAudio();
                 
-                const speedSlider = document.getElementById('speedSlider');
-                speedSlider.addEventListener('input', (e) => {
-                    document.getElementById('speedValue').textContent = e.target.value + 'x';
-                    if (this.utterance) {
-                        this.utterance.rate = parseFloat(e.target.value);
+                document.getElementById('voiceSelect').onchange = (e) => {
+                    const index = e.target.value;
+                    if (index !== '') {
+                        this.selectedVoice = this.availableVoices[index];
                     }
-                });
-
-                const voiceSelect = document.getElementById('voiceSelect');
-                voiceSelect.addEventListener('change', (e) => {
-                    const selectedIndex = e.target.value;
-                    if (selectedIndex !== '') {
-                        this.selectedVoice = this.availableVoices[selectedIndex];
-                        this.updateStatus('音声を変更しました: ' + this.selectedVoice.name);
-                    } else {
-                        this.selectedVoice = null;
-                        this.updateStatus('音声をデフォルトに戻しました');
-                    }
-                });
+                };
             }
 
             loadVoices() {
-                console.log('音声を読み込み中...');
-                
                 const getVoices = () => {
                     this.availableVoices = speechSynthesis.getVoices();
-                    console.log('利用可能な音声数:', this.availableVoices.length);
-                    
                     if (this.availableVoices.length > 0) {
                         this.populateVoiceSelect();
-                        this.updateStatus(`${this.availableVoices.length}個の音声が利用可能です`);
+                        this.updateStatus(this.availableVoices.length + '個の音声が利用可能です');
                     } else {
                         setTimeout(() => this.loadVoices(), 500);
                     }
                 };
-
                 getVoices();
                 speechSynthesis.addEventListener('voiceschanged', getVoices);
             }
 
             populateVoiceSelect() {
-                const voiceSelect = document.getElementById('voiceSelect');
-                voiceSelect.innerHTML = '<option value="">デフォルト（自動選択）</option>';
+                const select = document.getElementById('voiceSelect');
+                select.innerHTML = '<option value="">デフォルト</option>';
                 
-                console.log('音声選択肢を作成中...');
-                
-                // 日本語音声を優先表示
-                const japaneseVoices = this.availableVoices.filter(voice => 
-                    voice.lang.includes('ja') || voice.name.includes('Japanese') || voice.name.includes('日本')
-                );
-                const otherVoices = this.availableVoices.filter(voice => 
-                    !voice.lang.includes('ja') && !voice.name.includes('Japanese') && !voice.name.includes('日本')
-                );
-                
-                if (japaneseVoices.length > 0) {
-                    const japaneseGroup = document.createElement('optgroup');
-                    japaneseGroup.label = '🇯🇵 日本語音声';
-                    japaneseVoices.forEach((voice) => {
+                this.availableVoices.forEach((voice, index) => {
+                    if (voice.lang.includes('ja') || voice.name.includes('Japanese')) {
                         const option = document.createElement('option');
-                        option.value = this.availableVoices.indexOf(voice);
-                        option.textContent = `${voice.name} (${voice.lang})`;
-                        japaneseGroup.appendChild(option);
-                    });
-                    voiceSelect.appendChild(japaneseGroup);
+                        option.value = index;
+                        option.textContent = voice.name;
+                        select.appendChild(option);
+                    }
+                });
+            }
+
+            testAudio() {
+                console.log('音声テスト開始');
+                if (!speechSynthesis) {
+                    this.updateStatus('音声合成に対応していません');
+                    return;
                 }
                 
-                if (otherVoices.length > 0) {
-                    const otherGroup = document.createElement('optgroup');
-                    otherGroup.label = '🌍 その他の音声';
-                    otherVoices.slice(0, 10).forEach((voice) => {
-                        const option = document.createElement('option');
-                        option.value = this.availableVoices.indexOf(voice);
-                        option.textContent = `${voice.name} (${voice.lang})`;
-                        otherGroup.appendChild(option);
-                    });
-                    voiceSelect.appendChild(otherGroup);
-                }
+                const testUtterance = new SpeechSynthesisUtterance('音声テストです');
+                testUtterance.onstart = () => this.updateStatus('テスト中...');
+                testUtterance.onend = () => this.updateStatus('テスト完了');
+                testUtterance.onerror = (e) => this.updateStatus('エラー: ' + e.error);
                 
-                console.log('音声選択肢の作成完了');
+                speechSynthesis.speak(testUtterance);
             }
 
             play() {
@@ -409,57 +162,20 @@
                     return;
                 }
 
-                if (this.isPaused && this.utterance) {
-                    speechSynthesis.resume();
-                    this.isPaused = false;
-                    this.isPlaying = true;
-                    this.updateButtons();
-                    return;
-                }
-
-                this.currentText = text;
-                this.currentPosition = 0;
                 this.utterance = new SpeechSynthesisUtterance(text);
                 
-                // 選択された音声または日本語音声を使用
                 if (this.selectedVoice) {
                     this.utterance.voice = this.selectedVoice;
-                    console.log('選択された音声を使用:', this.selectedVoice.name);
-                } else {
-                    const voices = speechSynthesis.getVoices();
-                    const japaneseVoice = voices.find(voice => 
-                        voice.lang.includes('ja') || voice.name.includes('Japanese')
-                    );
-                    if (japaneseVoice) {
-                        this.utterance.voice = japaneseVoice;
-                        console.log('日本語音声を自動選択:', japaneseVoice.name);
-                    }
                 }
-
-                this.utterance.rate = parseFloat(document.getElementById('speedSlider').value);
-                this.utterance.pitch = 1;
-                this.utterance.volume = 1;
 
                 this.utterance.onstart = () => {
                     this.isPlaying = true;
-                    this.updateButtons();
                     this.updateStatus('再生中...');
-                    this.startProgress();
                 };
 
                 this.utterance.onend = () => {
                     this.isPlaying = false;
-                    this.isPaused = false;
-                    this.updateButtons();
                     this.updateStatus('再生完了');
-                    this.resetProgress();
-                };
-
-                this.utterance.onerror = (e) => {
-                    console.error('音声エラー:', e);
-                    this.updateStatus('音声の再生でエラーが発生しました');
-                    this.isPlaying = false;
-                    this.updateButtons();
                 };
 
                 speechSynthesis.speak(this.utterance);
@@ -468,9 +184,6 @@
             pause() {
                 if (this.isPlaying) {
                     speechSynthesis.pause();
-                    this.isPaused = true;
-                    this.isPlaying = false;
-                    this.updateButtons();
                     this.updateStatus('一時停止中');
                 }
             }
@@ -478,163 +191,21 @@
             stop() {
                 speechSynthesis.cancel();
                 this.isPlaying = false;
-                this.isPaused = false;
-                this.updateButtons();
                 this.updateStatus('停止しました');
-                this.resetProgress();
-            }
-
-            rewind() {
-                if (this.currentText) {
-                    this.stop();
-                    setTimeout(() => {
-                        const words = this.currentText.split('');
-                        const rewindPosition = Math.max(0, Math.floor(words.length * 0.1));
-                        const newText = words.slice(rewindPosition).join('');
-                        document.getElementById('textInput').value = newText;
-                        this.play();
-                    }, 100);
-                }
-            }
-
-            forward() {
-                if (this.currentText) {
-                    this.stop();
-                    setTimeout(() => {
-                        const words = this.currentText.split('');
-                        const forwardPosition = Math.min(words.length, Math.floor(words.length * 0.1));
-                        const newText = words.slice(forwardPosition).join('');
-                        if (newText.trim()) {
-                            document.getElementById('textInput').value = newText;
-                            this.play();
-                        }
-                    }, 100);
-                }
             }
 
             clearText() {
                 document.getElementById('textInput').value = '';
-                this.stop(); // 音声再生中の場合は停止
+                this.stop();
                 this.updateStatus('テキストをクリアしました');
-            }
-                const text = document.getElementById('textInput').value.trim();
-                if (!text) {
-                    this.updateStatus('保存するテキストを入力してください');
-                    return;
-                }
-
-                const title = text.substring(0, 50) + (text.length > 50 ? '...' : '');
-                const article = {
-                    id: Date.now(),
-                    title: title,
-                    content: text,
-                    date: new Date().toLocaleString('ja-JP')
-                };
-
-                this.savedArticles.unshift(article);
-                this.saveSavedArticles();
-                this.renderSavedArticles();
-                this.updateStatus('記事を保存しました');
-            }
-
-            loadArticle(content) {
-                document.getElementById('textInput').value = content;
-                this.updateStatus('記事を読み込みました');
-            }
-
-            deleteArticle(id) {
-                this.savedArticles = this.savedArticles.filter(article => article.id !== id);
-                this.saveSavedArticles();
-                this.renderSavedArticles();
-                this.updateStatus('記事を削除しました');
-            }
-
-            updateButtons() {
-                document.getElementById('playBtn').disabled = this.isPlaying;
-                document.getElementById('pauseBtn').disabled = !this.isPlaying;
-                document.getElementById('stopBtn').disabled = !this.isPlaying && !this.isPaused;
-                document.getElementById('rewindBtn').disabled = !this.isPlaying && !this.isPaused;
-                document.getElementById('forwardBtn').disabled = !this.isPlaying && !this.isPaused;
             }
 
             updateStatus(message) {
                 document.getElementById('statusInfo').textContent = message;
             }
-
-            startProgress() {
-                const progressFill = document.getElementById('progressFill');
-                let progress = 0;
-                const interval = setInterval(() => {
-                    if (!this.isPlaying) {
-                        clearInterval(interval);
-                        return;
-                    }
-                    progress += 0.5;
-                    progressFill.style.width = Math.min(progress, 100) + '%';
-                    if (progress >= 100) {
-                        clearInterval(interval);
-                    }
-                }, 100);
-            }
-
-            resetProgress() {
-                document.getElementById('progressFill').style.width = '0%';
-            }
-
-            renderSavedArticles() {
-                const savedList = document.getElementById('savedList');
-                if (this.savedArticles.length === 0) {
-                    savedList.innerHTML = '<p style="text-align: center; color: #666;">保存された記事はありません</p>';
-                    return;
-                }
-
-                savedList.innerHTML = this.savedArticles.map(article => `
-                    <div class="article-item">
-                        <div class="article-title" onclick="converter.loadArticle(\`${article.content.replace(/`/g, '\\`')}\`)">
-                            ${article.title}
-                        </div>
-                        <div class="article-preview">
-                            保存日時: ${article.date}
-                        </div>
-                        <div class="article-actions">
-                            <button onclick="converter.loadArticle(\`${article.content.replace(/`/g, '\\`')}\`)" class="btn-primary" style="font-size: 12px; padding: 8px 12px;">
-                                📖 読み込み
-                            </button>
-                            <button onclick="converter.deleteArticle(${article.id})" class="btn-danger" style="font-size: 12px; padding: 8px 12px;">
-                                🗑️ 削除
-                            </button>
-                        </div>
-                    </div>
-                `).join('');
-            }
-
-            loadSavedArticles() {
-                try {
-                    const saved = JSON.parse(localStorage.getItem('savedArticles') || '[]');
-                    return Array.isArray(saved) ? saved : [];
-                } catch {
-                    return [];
-                }
-            }
-
-            saveSavedArticles() {
-                try {
-                    localStorage.setItem('savedArticles', JSON.stringify(this.savedArticles));
-                } catch (e) {
-                    console.warn('記事の保存に失敗しました:', e);
-                }
-            }
         }
 
-        // アプリケーションの初期化
         window.converter = new AudioConverter();
-        
-        // 音声リストが更新された時の処理
-        speechSynthesis.addEventListener('voiceschanged', () => {
-            if (window.converter) {
-                window.converter.loadVoices();
-            }
-        });
     </script>
 </body>
 </html>
