@@ -252,6 +252,9 @@
             <button id="saveBtn" class="btn-secondary">
                 ⭐ お気に入り保存
             </button>
+            <button id="clearBtn" class="btn-warning">
+                🗑️ テキストクリア
+            </button>
         </div>
 
         <div class="voice-control">
@@ -316,6 +319,7 @@
                 document.getElementById('rewindBtn').addEventListener('click', () => this.rewind());
                 document.getElementById('forwardBtn').addEventListener('click', () => this.forward());
                 document.getElementById('saveBtn').addEventListener('click', () => this.saveArticle());
+                document.getElementById('clearBtn').addEventListener('click', () => this.clearText());
                 
                 const speedSlider = document.getElementById('speedSlider');
                 speedSlider.addEventListener('input', (e) => {
@@ -508,7 +512,11 @@
                 }
             }
 
-            saveArticle() {
+            clearText() {
+                document.getElementById('textInput').value = '';
+                this.stop(); // 音声再生中の場合は停止
+                this.updateStatus('テキストをクリアしました');
+            }
                 const text = document.getElementById('textInput').value.trim();
                 if (!text) {
                     this.updateStatus('保存するテキストを入力してください');
