@@ -76,6 +76,16 @@
             音声: <select id="voiceSelect"><option>読み込み中...</option></select>
         </div>
         
+        <div class="voice-control">
+            音程: <input type="range" id="pitchSlider" min="0.1" max="2" step="0.1" value="1">
+            <span id="pitchValue">1.0</span>
+        </div>
+        
+        <div class="voice-control">
+            速度: <input type="range" id="rateSlider" min="0.1" max="3" step="0.1" value="1">
+            <span id="rateValue">1.0</span>
+        </div>
+        
         <div class="status" id="statusInfo">
             テキストを入力して再生ボタンを押してください
         </div>
@@ -109,6 +119,16 @@
                     if (index !== '') {
                         this.selectedVoice = this.availableVoices[index];
                     }
+                };
+
+                // 音程コントロール
+                document.getElementById('pitchSlider').oninput = (e) => {
+                    document.getElementById('pitchValue').textContent = e.target.value;
+                };
+
+                // 速度コントロール
+                document.getElementById('rateSlider').oninput = (e) => {
+                    document.getElementById('rateValue').textContent = e.target.value;
                 };
             }
 
@@ -147,7 +167,18 @@
                     return;
                 }
                 
-                const testUtterance = new SpeechSynthesisUtterance('音声テストです');
+                const testUtterance = new SpeechSynthesisUtterance('これは音声品質テストです。自然で流暢な読み上げをテストしています。');
+                
+                // 選択された音声を適用
+                if (this.selectedVoice) {
+                    testUtterance.voice = this.selectedVoice;
+                }
+                
+                // 音声パラメータを適用
+                testUtterance.rate = parseFloat(document.getElementById('rateSlider').value);
+                testUtterance.pitch = parseFloat(document.getElementById('pitchSlider').value);
+                testUtterance.volume = 1.0;
+                
                 testUtterance.onstart = () => this.updateStatus('テスト中...');
                 testUtterance.onend = () => this.updateStatus('テスト完了');
                 testUtterance.onerror = (e) => this.updateStatus('エラー: ' + e.error);
@@ -162,19 +193,36 @@
                     return;
                 }
 
+                // 一時停止から再開の場合
+                if (this.isPaused && this.utterance) {
+                    speechSynthesis.resume();
+                    this.isPaused = false;
+                    this.isPlaying = true;
+                    this.updateStatus('再生中...');
+                    return;
+                }
+
+                // 新規再生の場合
                 this.utterance = new SpeechSynthesisUtterance(text);
                 
                 if (this.selectedVoice) {
                     this.utterance.voice = this.selectedVoice;
                 }
 
+                // 音声パラメータを設定
+                this.utterance.rate = parseFloat(document.getElementById('rateSlider').value);
+                this.utterance.pitch = parseFloat(document.getElementById('pitchSlider').value);
+                this.utterance.volume = 1.0;
+
                 this.utterance.onstart = () => {
                     this.isPlaying = true;
+                    this.isPaused = false;
                     this.updateStatus('再生中...');
                 };
 
                 this.utterance.onend = () => {
                     this.isPlaying = false;
+                    this.isPaused = false;
                     this.updateStatus('再生完了');
                 };
 
@@ -184,6 +232,8 @@
             pause() {
                 if (this.isPlaying) {
                     speechSynthesis.pause();
+                    this.isPaused = true;
+                    this.isPlaying = false;
                     this.updateStatus('一時停止中');
                 }
             }
